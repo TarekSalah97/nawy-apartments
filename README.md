@@ -42,6 +42,14 @@ npm run dev
 
 Base URL: http://localhost:<API_PORT>/api/v1
 
+### API Documentation
+
+Live API documentation is available at /api/docs when the server is running:
+
+```bash
+http://localhost:4000/api/docs
+```
+
 #### GET /apartments
 
 List apartments with optional search, filters, sorting, and pagination.
