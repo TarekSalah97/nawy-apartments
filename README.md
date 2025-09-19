@@ -1,79 +1,76 @@
-# Backend
-# 🔐 NestJS Auth API
+# Nawy Apartments — Backend API
 
-This is a production-ready authentication API built using [NestJS] and [MongoDB]
+A simple REST API for listing, creating, and fetching apartment details.  
+Built with **Node.js + TypeScript + Express + Mongoose**, validated with **Zod**.
 
+## Features
 
-## 📦 Tech Stack
+- CRUD (list, details, create) for apartments
+- Search & filters: `searchQuery`, `project`, `minPrice`, `maxPrice`, `bedrooms`, `sortBy`
+- Pagination (`page`, `perPage`)
+- Zod request validation
+- MongoDB indices + text search
+- Seed script for amenities, developers, and 20 sample apartments
 
-- **Framework**: NestJS
-- **Database**: MongoDB (via Mongoose)
-- **Auth**: JWT, Passport
-- **Validation**: class-validator
-- **Docs**: Swagger (OpenAPI)
-- **Logger**: Winston
+## Quickstart
 
----
+### Prerequisites
 
-## 🛠 Setup Instructions
+- Node.js 20+
+- MongoDB running locally (or via Docker: `docker run -d --name nawy_mongo -p 27017:27017 mongo:7`)
 
+### Environment
 
-- Clone the Repo
-- Install dependencies
+Create `.env` in `backend/`:
+
+```env
+API_PORT=4000
+MONGODB_URI=mongodb://localhost:27017/nawy_apartments
+CORS_ORIGIN=http://localhost:3000
+```
+
+### Install & run
 
 ```bash
 cd backend
-```
-- Create a .env file
-```bash
-MONGO_URI=mongodb://localhost:27017/fullstack_test
-JWT_SECRET=your_jwt_secret_key
-JWT_EXPIRES_IN=3600s
+npm install
+cp .env.example .env   # if present; otherwise create .env with values below
+npm run dev
 ```
 
-## Run the app
-```bash
-npm run start:dev
-```
-## 🧪 API Endpoints (Swagger Documentation)
-- Visit: http://localhost:3000/api
+### Endpoints
 
-# Frontend
-# 🧑‍💻 React Auth Frontend
+Base URL: http://localhost:<API_PORT>/api/v1
 
-This is a minimal authentication frontend built with **React**, integrated with a NestJS backend.
+#### GET /apartments
 
----
+List apartments with optional search, filters, sorting, and pagination.
 
-## ⚙️ Tech Stack
+Query params (all optional):
 
-- **Framework**: React + TypeScript
-- **UI**: Material UI (v5)
-- **Form Handling**: React Hook Form
-- **Validation**: Yup
-- **Routing**: React Router
-- **API Calls**: Axios
-- **Loading State**: MUI LoadingButton
+- searchQuery — free text across unitName, unitNumber, projectName
+- project — exact project name (case-insensitive)
+- minPrice, maxPrice — numbers
+- bedrooms — integer
+- page — default 1
+- perPage — default 12 (max 100)
+- sortBy — e.g. MIN_PRICE, MAX_PRICE, NEWEST
 
----
+##### Response
 
-## 🛠 Setup Instructions
-
-- Clone the Repo
-- Install dependencies
-
-```bash
-cd frontend
+```json
+{
+  "data": [
+    /* apartments */
+  ],
+  "pageInfo": { "page": 1, "perPage": 12, "total": 123, "totalPages": 11 }
+}
 ```
 
-- Create a .env file
+#### GET /apartments/:id
 
-```bash
-BASE_URL = "http://localhost:3000"
-```
+Fetch one apartment by Mongo ObjectId.
 
-## Run the app
+#### POST /apartments
 
-```bash
-npm start
-```
+Fetch one apartment by Mongo ObjectId.
