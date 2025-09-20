@@ -40,7 +40,7 @@ npm run dev
 
 ### Endpoints
 
-Base URL: http://localhost:<API_PORT>/api/v1
+Base URL: http://localhost:4000/api/v1
 
 ### API Documentation
 
