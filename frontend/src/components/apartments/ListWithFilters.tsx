@@ -1,52 +1,97 @@
 "use client";
 
 import { Drawer, Grid, Stack } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { IFilterState, SortByOptions } from "../../../helpers/filters/types";
 import useResponsive from "../../../hooks/useResponsive";
 import { PaginationSection } from "../PaginationSection";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import ApartmentCard from "./ApartmentCard";
+import { ApartmentCardSkeleton } from "./ApartmentCardSkeleton";
+import { FilterButtons } from "./filters/FilterButtons";
 
 export interface IListWithFilters {
   query: any;
 }
 
+const toNum = (v: string | null | undefined) =>
+  v != null && v !== "" ? Number(v) : undefined;
+
 export function ListWithFilters(props: IListWithFilters) {
-  const { minPrice, maxPrice, text, page, bedrooms } = props.query;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const urlState = useMemo(() => {
+    const page = toNum(searchParams.get("page")) ?? 1;
+    const text = searchParams.get("text") ?? undefined;
+    const minPrice = toNum(searchParams.get("minPrice"));
+    const maxPrice = toNum(searchParams.get("maxPrice"));
+    const bedrooms = toNum(searchParams.get("bedrooms"));
+    const sortBy = searchParams.get("sortBy") ?? undefined;
+    return { page, text, minPrice, maxPrice, bedrooms, sortBy };
+  }, [searchParams]);
+
   const isDesktop = useResponsive("up", "md");
 
   const [filterData, setFilterData] = useState<IFilterState>({
     apartments: [],
     loading: true,
-    text: text ? (typeof text === "string" ? text : undefined) : undefined,
-    page: page ?? 1,
+    text: urlState.text,
+    page: urlState.page,
     sortPopoverOpen: null,
-    filterDrawerOpen: isDesktop ? true : false,
-    selectedSort: SortByOptions.NEWEST,
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    bedrooms: bedrooms ? Number(bedrooms) : undefined,
+    filterDrawerOpen: !!isDesktop,
+    minPrice: urlState.minPrice,
+    maxPrice: urlState.maxPrice,
+    bedrooms: urlState.bedrooms,
+    sortBy: urlState.sortBy ?? SortByOptions.NEWEST,
   });
-
   const componentProps = {
     filterData,
     setFilterData,
   };
-  const isLgOrMdScreen = useResponsive("up", "md");
 
   useEffect(() => {
-    if (props.query.text && props.query.text !== filterData.text) {
-      setFilterData((prev: any) => ({ ...prev, text: props.query.text }));
-    }
-  }, [props.query]);
+    setFilterData((prev) => ({
+      ...prev,
+      text: urlState.text,
+      page: urlState.page,
+      minPrice: urlState.minPrice,
+      maxPrice: urlState.maxPrice,
+      bedrooms: urlState.bedrooms,
+      sortBy: urlState.sortBy,
+    }));
+  }, [
+    urlState.page,
+    urlState.text,
+    urlState.minPrice,
+    urlState.maxPrice,
+    urlState.sortBy,
+    urlState.bedrooms,
+  ]);
 
   useEffect(() => {
     let ignore = false;
     (async () => {
       try {
         setFilterData((prev) => ({ ...prev, loading: true }));
-        const res = await fetch("http://localhost:4000/api/v1/apartments/", {
-          credentials: "include",
-        });
+        setFilterData((prev) => ({ ...prev, loading: true }));
+        const qs = new URLSearchParams();
+        qs.set("page", String(urlState.page));
+        if (urlState.text) qs.set("searchQuery", urlState.text);
+        if (urlState.minPrice != null)
+          qs.set("minPrice", String(urlState.minPrice));
+        if (urlState.maxPrice != null)
+          qs.set("maxPrice", String(urlState.maxPrice));
+        if (urlState.bedrooms != null)
+          qs.set("bedrooms", String(urlState.bedrooms));
+        if (urlState.sortBy) qs.set("sortBy", urlState.sortBy);
+        const res = await fetch(
+          `http://localhost:4000/api/v1/apartments?${qs.toString()}`,
+          {
+            credentials: "include",
+          }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
 
@@ -66,53 +111,81 @@ export function ListWithFilters(props: IListWithFilters) {
       ignore = true;
     };
   }, [
-    filterData.selectedSort,
-    filterData.page,
-    filterData.text,
-    filterData.bedrooms,
-    filterData.minPrice,
-    filterData.maxPrice,
+    urlState.page,
+    urlState.text,
+    urlState.minPrice,
+    urlState.maxPrice,
+    urlState.bedrooms,
+    urlState.sortBy,
   ]);
 
+  const clearFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    // remove all filter keys you use in URL
+    ["text", "minPrice", "maxPrice", "bedrooms", "sortBy"].forEach((k) =>
+      params.delete(k)
+    );
+    params.set("page", "1"); // back to first page
+
+    router.push(`${pathname}?${params.toString()}`);
+
+    setFilterData((prev) => ({
+      ...prev,
+      text: undefined,
+      minPrice: undefined,
+      maxPrice: undefined,
+      bedrooms: undefined,
+      sortBy: SortByOptions.NEWEST,
+      page: 1,
+    }));
+  };
+
+  const onPatchQuery = (
+    patch: Record<string, string | number | null | undefined>
+  ) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(patch).forEach(([k, v]) => {
+      if (v === undefined || v === null || v === "") params.delete(k);
+      else params.set(k, String(v));
+    });
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
   return (
-    <Stack spacing={{ xs: "20px", md: "10px" }} mb={{ xs: "60px", md: 0 }}>
+    <Stack spacing={{ xs: "10px", md: "20px" }} mb={{ xs: "60px", md: 0 }}>
       <Grid
-        container
-        columnSpacing={2}
-        rowSpacing={2}
-        alignItems={"center"}
-        pt={{ xs: 2, md: 0 }}
+        size={{ xs: 6, md: 4, lg: 4 }}
+        justifyContent="flex-end"
+        style={{ paddingLeft: 0 }}
       >
-        {/* {isLgOrMdScreen ? (
-          checkSelectedFilterExistence(filterData) ? (
-            <SelectedFilterButtonSameLine {...componentProps} />
-          ) : (
-            <TitleButtonSameLine {...componentProps} />
-          )
-        ) : (
-          <TitleButtonSameLine {...componentProps} />
-        )} */}
+        <FilterButtons
+          {...componentProps}
+          onClear={clearFilters}
+          onPatchQuery={onPatchQuery}
+        />
       </Grid>
+      {!filterData.loading && filterData.apartments ? (
+        <Grid container spacing={2}>
+          {filterData.apartments.map((apt) => (
+            <Grid key={apt.id} size={{ xs: 12, md: 6, lg: 4 }}>
+              <ApartmentCard
+                apartment={apt}
+                href={`/apartments/${apt.id}`}
+                dense
+              />
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <Grid container spacing={2}>
+          {[1, 2, 3, 4].map((apt) => (
+            <Grid key={apt} size={{ xs: 12, md: 6, lg: 4 }}>
+              <ApartmentCardSkeleton />
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
-      {/* <ProductList
-        products={filterData.products}
-        isScrollable={false}
-        loading={filterData.loading}
-        addedComponentToList={
-          filterData.filterDrawerOpen && isLgOrMdScreen ? (
-            <Filters {...componentProps} />
-          ) : undefined
-        }
-      /> */}
-
-      <Drawer
-        open={!isLgOrMdScreen && filterData.filterDrawerOpen}
-        onClose={() =>
-          setFilterData((prev) => ({ ...prev, filterDrawerOpen: false }))
-        }
-      >
-        {/* <Filters {...componentProps} /> */}
-      </Drawer>
       {!filterData.loading &&
         filterData.pageInfo &&
         filterData.apartments.length > 0 &&

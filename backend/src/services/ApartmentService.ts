@@ -24,7 +24,10 @@ export async function listApartments(args: ListArgs) {
 
   if (args.project)
     filter.projectName = new RegExp(`^${escapeRegex(args.project)}$`, "i");
-  if (args.bedrooms !== undefined) filter.bedrooms = args.bedrooms;
+  if (args.bedrooms !== undefined) {
+    if (args.bedrooms < 3) filter.bedrooms = args.bedrooms;
+    else filter.bedrooms = { $gte: args.bedrooms };
+  }
   if (args.minPrice !== undefined || args.maxPrice !== undefined) {
     filter.price = {};
     if (args.minPrice !== undefined) filter.price.$gte = args.minPrice;
@@ -44,8 +47,9 @@ export async function listApartments(args: ListArgs) {
   if (args.sortBy) {
     if (args.sortBy === SortByOptions.MAX_PRICE) sort = { price: -1 };
     if (args.sortBy === SortByOptions.MIN_PRICE) sort = { price: 1 };
-    if (args.sortBy === SortByOptions.NEWEST) sort = { createdAt: -1 };
-  } else sort = { createdAt: -1 };
+  }
+
+  sort.createdAt = -1; // tie breaker
 
   const [items, total] = await Promise.all([
     Apartment.find(filter)

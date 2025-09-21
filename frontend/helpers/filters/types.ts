@@ -11,6 +11,7 @@ export interface IFilterState {
   sortPopoverOpen?: HTMLElement | null;
   selectedSort?: SortByOptions;
   filterDrawerOpen?: boolean;
+  sortBy?: string;
   minPrice?: number;
   maxPrice?: number;
   bedrooms?: number;

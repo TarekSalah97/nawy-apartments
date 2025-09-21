@@ -25,6 +25,10 @@ export default function ApartmentSearchField({
           const params = new URLSearchParams(searchParams?.toString() ?? "");
           params.set("text", String(value));
           router.push(`${pathname}?${params.toString()}`);
+        } else {
+          const params = new URLSearchParams(searchParams?.toString() ?? "");
+          params.delete("text");
+          router.push(`${pathname}?${params.toString()}`);
         }
       }}
       size="small"

@@ -6,7 +6,7 @@ type LayoutProps = {
 };
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <Stack spacing={10}>
+    <Stack spacing={10} mb={5}>
       <ApplicationHeader />
       {children}
     </Stack>
