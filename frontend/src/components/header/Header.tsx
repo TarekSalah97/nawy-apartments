@@ -6,7 +6,7 @@ import Slide from "@mui/material/Slide";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import ApartmentSearchField from "../ApartmentSearchField";
 import { Stack } from "@mui/material";
-
+import Link from "next/link";
 
 interface Props {
   window?: () => Window;
@@ -39,7 +39,7 @@ function ApplicationHeader() {
           right: "0",
           boxShadow: 0,
           borderBottom: "1px solid rgba(0, 0, 0, 0.20)",
-          px: {xs: 2, md: 5}
+          px: { xs: 2, md: 5 },
         }}
       >
         {/* <LoadingIndicator /> */}
@@ -50,7 +50,18 @@ function ApplicationHeader() {
             alignItems={"center"}
             justifyContent={"space-between"}
           >
-            <img src={"nawy.svg"} />
+            <Link
+              href="/apartments"
+              aria-label="Go to apartments"
+              style={{ display: "inline-flex" }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/nawy.svg"
+                alt="Nawy"
+                style={{ height: 32, cursor: "pointer" }}
+              />
+            </Link>
             <ApartmentSearchField onClick={() => {}} />
           </Stack>
           {/* {searchDataOptions && (

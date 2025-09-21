@@ -1,13 +1,6 @@
 import * as React from "react";
 import Layout from "@/components/Layout";
-import {
-  ImageList,
-  ImageListItem,
-  ImageListItemBar,
-  ListSubheader,
-  IconButton,
-  Container,
-} from "@mui/material";
+import { Container } from "@mui/material";
 import { ListWithFilters } from "@/components/apartments/ListWithFilters";
 
 export const metadata = { title: "Apartments" };

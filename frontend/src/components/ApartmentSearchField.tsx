@@ -13,9 +13,10 @@ export default function ApartmentSearchField({
   onClick,
 }: IProductSearchField) {
   const router = useRouter();
-  const pathname = usePathname();
+ // const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const pathname = "/apartments"
   return (
     <SearchField
       placeholder={`Search`}
