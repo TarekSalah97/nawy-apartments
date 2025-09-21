@@ -6,12 +6,14 @@ import { errorHandler } from "./middleware/errorHandler";
 import { config } from "./config/env";
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./config/swagger";
+import { options } from "./cors";
 
 export function createApp() {
   const app = express();
   app.use(cors({ origin: config.corsOrigin }));
   app.use(express.json());
   app.use(morgan("dev"));
+  app.use(cors(options));
 
   // Swagger Documentation UI
   app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
