@@ -92,25 +92,19 @@ export function FilterButtons({
     (filterData.sortBy != null && filterData.sortBy !== SortByOptions.NEWEST);
   return (
     <Stack
-      direction="row"
-      spacing={{ xs: "8px", md: "12px", lg: "30px" }}
-      justifyContent="end"
+      direction={{ xs: "column", md: "row" }}
+      spacing={{ xs: 1.5, md: 2, lg: 3 }}
       pt={{ xs: 0, sm: "16px", md: 0 }}
-      alignItems="center"
+      alignItems={{ xs: "stretch", md: "center" }}
       useFlexGap
       flexWrap="wrap"
     >
-      <TextWithIconButton
-        text={"Sort by"}
-        icon={
-          filterData.sortPopoverOpen ? "ep:arrow-up-bold" : "ep:arrow-down-bold"
-        }
-        onClick={onClickSort}
-        textProps={{
-          fontSize: { xs: "14px", md: "20px" },
-        }}
-      />
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={1}
+        sx={{ width: { xs: "100%", md: "auto" } }}
+      >
         <BedOutlinedIcon fontSize="small" />
         <ToggleButtonGroup
           size="small"
@@ -119,6 +113,17 @@ export function FilterButtons({
           value={filterData.bedrooms ?? null}
           onChange={handleBedrooms}
           aria-label="Bedrooms"
+          sx={{
+            width: { xs: "100%", md: "auto" },
+            flexWrap: "wrap",
+            rowGap: 0.5,
+            columnGap: 0.5,
+            "& .MuiToggleButton-root": {
+              flex: { xs: "1 1 calc(25% - 6px)", md: "0 0 auto" },
+              minWidth: { xs: 0, md: 48 },
+              py: 0.5,
+            },
+          }}
         >
           <ToggleButton value={null as unknown as number}>Any</ToggleButton>
           <ToggleButton value={1}>1</ToggleButton>
@@ -126,7 +131,7 @@ export function FilterButtons({
           <ToggleButton value={3}>3+</ToggleButton>
         </ToggleButtonGroup>
       </Stack>
-      <Box sx={{ minWidth: { xs: 220, md: 320 }, px: 1 }}>
+      <Box sx={{ width: { xs: "100%", md: 340 }, px: { xs: 0, md: 1 } }}>
         <Typography
           variant="caption"
           fontWeight={700}
@@ -154,19 +159,38 @@ export function FilterButtons({
           </Typography>
         </Stack>
       </Box>
-      <Button
-        variant="text"
-        onClick={onClear}
-        disabled={!hasActiveFilters}
-        startIcon={<ClearAllRoundedIcon />}
-        sx={{
-          textTransform: "none",
-          fontSize: { xs: 14, md: 20 },
-          color: "text.primary",
-        }}
+      <Stack
+        direction="row"
+        spacing={{ xs: 1, md: 2 }}
+        justifyContent={{ xs: "space-between", md: "flex-end" }}
+        alignItems="center"
+        sx={{ width: { xs: "100%", md: "auto" }, ml: { md: "auto" } }}
       >
-        Clear
-      </Button>
+        <TextWithIconButton
+          text={"Sort by"}
+          icon={
+            filterData.sortPopoverOpen
+              ? "ep:arrow-up-bold"
+              : "ep:arrow-down-bold"
+          }
+          onClick={onClickSort}
+          textProps={{ fontSize: { xs: "14px", md: "20px" } }}
+        />
+
+        <Button
+          variant="text"
+          onClick={onClear}
+          disabled={!hasActiveFilters}
+          startIcon={<ClearAllRoundedIcon />}
+          sx={{
+            textTransform: "none",
+            fontSize: { xs: 14, md: 20 },
+            color: "text.primary",
+          }}
+        >
+          Clear
+        </Button>
+      </Stack>
       <SortOptionsPopOver
         setFilterData={setFilterData}
         filterData={filterData}
