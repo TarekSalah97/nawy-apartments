@@ -1,11 +1,9 @@
-import Head from "next/head";
-
-export default function Root(props: { disableCustomTheme?: boolean }) {
+export default function Home(props: { disableCustomTheme?: boolean }) {
   return (
     <div>
-      <Head>
+      <head>
         <title>{`Nawy | Home`}</title>
-      </Head>
+      </head>
     </div>
   );
 }
