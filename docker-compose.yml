@@ -1,0 +1,54 @@
+# docker-compose.yml
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: apartments
+
+  backend:
+    image: node:20-alpine
+    container_name: backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      # connect to the mongo service by its name on the Docker network
+      MONGODB_URI: mongodb://mongo:27017/apartments
+      # CORS: allow your browser on localhost:3000
+      ALLOWED_ORIGINS: http://localhost:3000
+    command: sh -c "npm ci && npm run dev"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - mongo
+
+  frontend:
+    image: node:20-alpine
+    container_name: frontend
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+    environment:
+      NODE_ENV: development
+      # Browser will call the API on the host
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      # Server-side (in-container) calls should use the backend's service name
+      INTERNAL_API_URL: http://backend:4000
+    # expose Next dev server on 0.0.0.0 so your host can reach it
+    command: sh -c "npm ci && npm run dev -- -H 0.0.0.0 -p 3000"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:

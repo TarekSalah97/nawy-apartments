@@ -1,6 +1,7 @@
 frontend/node_modules
 frontend/build
 frontend/.env*
+frontend/.next/
 # === BACKEND ===
 backend/dist
 backend/node_modules

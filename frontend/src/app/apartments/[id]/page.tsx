@@ -65,7 +65,6 @@ export default async function ApartmentPage({
         <ApartmentHero apartment={apt} />
 
         <Grid container spacing={3} sx={{ mt: 1 }}>
-          {/* Left column */}
           <Grid size={{ xs: 12, md: 8 }}>
             <ApartmentGallery images={apt.images} />
             <ApartmentSpecs apartment={apt} />
@@ -78,7 +77,6 @@ export default async function ApartmentPage({
             <ApartmentKeyFacts apartment={apt} />
           </Grid>
 
-          {/* Right column */}
           <Grid size={{ xs: 12, md: 4 }}>
             <ApartmentContactCard apartment={apt} />
             {apt.developer && (
