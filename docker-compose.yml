@@ -10,7 +10,7 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      MONGO_INITDB_DATABASE: apartments
+      MONGO_INITDB_DATABASE: nawy_apartments
 
   backend:
     image: node:20-alpine
@@ -18,11 +18,12 @@ services:
     working_dir: /app
     volumes:
       - ./backend:/app
+      - backend_node_modules:/app/node_modules 
     environment:
       NODE_ENV: development
       PORT: 4000
       # connect to the mongo service by its name on the Docker network
-      MONGODB_URI: mongodb://mongo:27017/apartments
+      MONGODB_URI: mongodb://mongo:27017/nawy_apartments
       # CORS: allow your browser on localhost:3000
       ALLOWED_ORIGINS: http://localhost:3000
     command: sh -c "npm ci && npm run dev"
@@ -37,6 +38,7 @@ services:
     working_dir: /app
     volumes:
       - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
     environment:
       NODE_ENV: development
       # Browser will call the API on the host
