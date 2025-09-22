@@ -14,8 +14,13 @@ import ApartmentHero from "@/components/apartments/details/ApartmentHero";
 import ApartmentKeyFacts from "@/components/apartments/details/ApartmentKeyFacts";
 import ApartmentSpecs from "@/components/apartments/details/ApartmentSpecs";
 
+const API_BASE =
+  process.env.INTERNAL_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:4000";
+
 async function getApartment(id: string): Promise<IApartment> {
-  const res = await fetch(`http://localhost:4000/api/v1/apartments/${id}`, {
+  const res = await fetch(`${API_BASE}/api/v1/apartments/${id}`, {
     cache: "no-store",
   });
   if (res.status === 404) notFound();
@@ -30,9 +35,12 @@ async function getApartment(id: string): Promise<IApartment> {
   return apt;
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
+export async function generateMetadata({ params }: {
+   params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
   try {
-    const apt = await getApartment(params.id);
+    const apt = await getApartment(id);
     const titleParts = [
       apt.unitName,
       apt.city,

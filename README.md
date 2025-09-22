@@ -30,7 +30,7 @@ docker compose up --build
 
 #### You'll know the frontend is ready when you see:
 
-- "Ready in Xs" message in the Docker logs
+- "frontend  |  ✓ Ready in Xs" message in the Docker logs
 - The frontend URL becomes accessible in your browser
 - The frontend depends on the backend API, so it may take a few moments after the backend is running.
 
