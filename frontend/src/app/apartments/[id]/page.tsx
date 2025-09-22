@@ -55,9 +55,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default async function ApartmentPage({
   params,
 }: {
-  params: { id: string };
+   params: Promise<{ id: string }>;
 }) {
-  const apt = await getApartment(params.id);
+
+  const { id } = await params;
+  const apt = await getApartment(id);
 
   return (
     <Layout>
